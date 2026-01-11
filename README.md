@@ -255,22 +255,20 @@ CRM-Client-Management-Brand-Product/
 ├── backend/
 │   ├── config/
 │   │   ├── db.js              # MongoDB connection
-│   │   └── jwt.js              # JWT configuration
 │   ├── models/
 │   │   ├── User.js            # User model
 │   │   └── Lead.js            # Lead model (with notes, activities)
 │   ├── routes/
 │   │   ├── auth.routes.js     # Authentication routes
 │   │   ├── lead.routes.js    # Lead management routes
-│   │   └── user.routes.js     # User routes
+│   │   ├── user.routes.js    # User routes
+│   │   └── csv.routes.js     # CSV routes
 │   ├── controllers/
 │   │   ├── auth.controller.js # Auth logic
 │   │   ├── lead.controller.js # Lead CRUD operations
-│   │   └── user.controller.js # User operations
 │   ├── middleware/
 │   │   ├── authmiddleware.js  # JWT authentication
 │   │   ├── role.middleware.js # Role-based access
-│   │   └── rateLimiter.js     # Rate limiting
 │   ├── utils/
 │   │   └── seedData.js        # Database seeding
 │   ├── server.js              # Express server
@@ -280,20 +278,27 @@ CRM-Client-Management-Brand-Product/
 │   ├── src/
 │   │   ├── api/
 │   │   │   ├── auth.js        # Auth API calls
+│   │   │   ├── stats.js        # Stats API calls
+│   │   │   ├── user.js        # User API calls
 │   │   │   └── leads.js       # Lead API calls
 │   │   ├── components/
-│   │   │   ├── LeadModal.jsx  # Lead form modal
-│   │   │   ├── StatusBadge.jsx # Status display
-│   │   │   ├── MobileNav.jsx  # Mobile navigation
-│   │   │   └── DarkModeToggle.jsx # Dark mode
+│   │   │   ├── LeadCard.jsx  # Lead 
+│   │   │   ├── StatCard.jsx # Stat
+│   │   │   ├── Filters.jsx  # Filters
+│   │   │   └── TopBar.jsx # Top Bar
 │   │   ├── pages/
-│   │   │   ├── Login.jsx       # Login/Register page
+│   │   │   ├── Login.jsx       # Login page
+│   │   │   ├── Leads.jsx       # Leads page
+│   │   │   ├── Register.jsx       # Register page
+│   │   │   ├── AddLead.jsx       # Add lead page
+│   │   │   ├── Analytics.jsx       # Analytics page
+│   │   │   ├── AssignLead.jsx       # Assign lead page
+│   │   │   ├── Settings.jsx       # Settings page
 │   │   │   ├── Dashboard.jsx  # Main dashboard
 │   │   │   └── LeadDetails.jsx # Lead details page
 │   │   ├── utils/
 │   │   │   ├── auth.js        # Auth utilities
 │   │   │   ├── api.js         # Axios instance
-│   │   │   └── toast.jsx      # Toast notifications
 │   │   ├── App.jsx            # Main app component
 │   │   └── main.jsx           # Entry point
 │   ├── package.json
