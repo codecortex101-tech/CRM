@@ -1,4 +1,5 @@
 const express = require("express");
+
 const {
   createLead,
   getLeads,
@@ -6,7 +7,9 @@ const {
   updateLead,
   deleteLead,
   addNote,
-  exportLeadsCSV,
+  editNote,     // ✅ ADD THIS
+  deleteNote,
+  exportLeadsCSV
 } = require("../controllers/lead.controller");
 
 const protect = require("../middleware/auth.middleware");
@@ -14,26 +17,31 @@ const adminOnly = require("../middleware/role.middleware");
 
 const router = express.Router();
 
-// 🔥 EXPORT CSV — MUST BE BEFORE :id
-router.get("/export/csv", protect, exportLeadsCSV);
+// EXPORT CSV
+router.get("/export/csv", protect, adminOnly, exportLeadsCSV);
 
-// Create lead (Admin only)
+// CREATE LEAD
 router.post("/", protect, adminOnly, createLead);
 
-// Get all leads
+// GET ALL LEADS
 router.get("/", protect, getLeads);
 
-// Get single lead
+// GET SINGLE LEAD
 router.get("/:id", protect, getLeadById);
 
-// Update lead
-router.put("/:id", protect, updateLead);
+// UPDATE LEAD
+router.put("/:id", protect, adminOnly, updateLead);
 
-// Delete lead (Admin only)
+// DELETE LEAD
 router.delete("/:id", protect, adminOnly, deleteLead);
 
-// Add note
-router.post("/:id/notes", protect, addNote);
+// ADD NOTE
+router.post("/:id/notes", protect, adminOnly, addNote);
+
+// EDIT NOTE ✅
+router.put("/:id/notes/:noteId", protect, adminOnly, editNote);
+
+// DELETE NOTE
+router.delete("/:id/notes/:noteId", protect, adminOnly, deleteNote);
 
 module.exports = router;
-

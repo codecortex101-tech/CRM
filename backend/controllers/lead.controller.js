@@ -1,29 +1,37 @@
 const Lead = require("../models/Lead");
 
-// ===============================
-// CREATE LEAD
-// ===============================
+/* =====================================================
+   CREATE LEAD (ADMIN)
+===================================================== */
 exports.createLead = async (req, res) => {
   try {
-    const lead = await Lead.create(req.body);
+    const lead = await Lead.create({
+      ...req.body,
+      assignedTo: req.body.assignedTo || req.user._id,
+    });
+
     res.status(201).json(lead);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
-// ===============================
-// GET ALL LEADS
-// ===============================
+/* =====================================================
+   GET ALL LEADS
+   Admin → all
+   User  → assigned only
+===================================================== */
 exports.getLeads = async (req, res) => {
   try {
-    let leads;
+    let filter = {};
 
-    if (req.user.role === "admin") {
-      leads = await Lead.find().populate("assignedTo", "name email");
-    } else {
-      leads = await Lead.find({ assignedTo: req.user._id });
+    if (req.user.role !== "admin") {
+      filter.assignedTo = req.user._id;
     }
+
+    const leads = await Lead.find(filter)
+      .populate("assignedTo", "name email")
+      .populate("notes.createdBy", "name email");
 
     res.json(leads);
   } catch (error) {
@@ -31,9 +39,9 @@ exports.getLeads = async (req, res) => {
   }
 };
 
-// ===============================
-// GET SINGLE LEAD
-// ===============================
+/* =====================================================
+   GET SINGLE LEAD
+===================================================== */
 exports.getLeadById = async (req, res) => {
   try {
     const lead = await Lead.findById(req.params.id)
@@ -46,7 +54,7 @@ exports.getLeadById = async (req, res) => {
 
     if (
       req.user.role !== "admin" &&
-      lead.assignedTo?._id.toString() !== req.user._id.toString()
+      lead.assignedTo?.toString() !== req.user._id.toString()
     ) {
       return res.status(403).json({ message: "Access denied" });
     }
@@ -57,9 +65,9 @@ exports.getLeadById = async (req, res) => {
   }
 };
 
-// ===============================
-// UPDATE LEAD
-// ===============================
+/* =====================================================
+   UPDATE LEAD (ADMIN)
+===================================================== */
 exports.updateLead = async (req, res) => {
   try {
     const lead = await Lead.findById(req.params.id);
@@ -79,7 +87,9 @@ exports.updateLead = async (req, res) => {
       req.params.id,
       req.body,
       { new: true }
-    );
+    )
+      .populate("assignedTo", "name email")
+      .populate("notes.createdBy", "name email");
 
     res.json(updatedLead);
   } catch (error) {
@@ -87,9 +97,9 @@ exports.updateLead = async (req, res) => {
   }
 };
 
-// ===============================
-// DELETE LEAD
-// ===============================
+/* =====================================================
+   DELETE LEAD (ADMIN)
+===================================================== */
 exports.deleteLead = async (req, res) => {
   try {
     const lead = await Lead.findById(req.params.id);
@@ -105,22 +115,18 @@ exports.deleteLead = async (req, res) => {
   }
 };
 
-// ===============================
-// ADD NOTE
-// ===============================
+/* =====================================================
+   ADD NOTE
+===================================================== */
 exports.addNote = async (req, res) => {
   try {
-    const lead = await Lead.findById(req.params.id);
-
-    if (!lead) {
-      return res.status(404).json({ message: "Lead not found" });
+    if (!req.body.content) {
+      return res.status(400).json({ message: "Note content is required" });
     }
 
-    if (
-      req.user.role !== "admin" &&
-      lead.assignedTo?.toString() !== req.user._id.toString()
-    ) {
-      return res.status(403).json({ message: "Access denied" });
+    const lead = await Lead.findById(req.params.id);
+    if (!lead) {
+      return res.status(404).json({ message: "Lead not found" });
     }
 
     lead.notes.push({
@@ -139,28 +145,51 @@ exports.addNote = async (req, res) => {
   }
 };
 
-// ===============================
-// DELETE NOTE
-// ===============================
-exports.deleteNote = async (req, res) => {
+/* =====================================================
+   EDIT NOTE
+===================================================== */
+exports.editNote = async (req, res) => {
   try {
-    const lead = await Lead.findById(req.params.id);
+    const { content } = req.body;
+    if (!content) {
+      return res.status(400).json({ message: "Note content is required" });
+    }
 
+    const lead = await Lead.findById(req.params.id);
     if (!lead) {
       return res.status(404).json({ message: "Lead not found" });
     }
 
     const note = lead.notes.id(req.params.noteId);
-
     if (!note) {
       return res.status(404).json({ message: "Note not found" });
     }
 
-    if (
-      req.user.role !== "admin" &&
-      note.createdBy?.toString() !== req.user._id.toString()
-    ) {
-      return res.status(403).json({ message: "Access denied" });
+    note.content = content;
+    await lead.save();
+
+    const updatedLead = await Lead.findById(req.params.id)
+      .populate("notes.createdBy", "name email");
+
+    res.json(updatedLead);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update note" });
+  }
+};
+
+/* =====================================================
+   DELETE NOTE
+===================================================== */
+exports.deleteNote = async (req, res) => {
+  try {
+    const lead = await Lead.findById(req.params.id);
+    if (!lead) {
+      return res.status(404).json({ message: "Lead not found" });
+    }
+
+    const note = lead.notes.id(req.params.noteId);
+    if (!note) {
+      return res.status(404).json({ message: "Note not found" });
     }
 
     note.deleteOne();
@@ -175,21 +204,14 @@ exports.deleteNote = async (req, res) => {
   }
 };
 
-// ===============================
-// 🔥 EXPORT LEADS TO CSV (FINAL)
-// ===============================
+/* =====================================================
+   EXPORT LEADS TO CSV (ADMIN)
+===================================================== */
 exports.exportLeadsCSV = async (req, res) => {
   try {
     const { status, priority } = req.query;
-
     let filter = {};
 
-    // 🔐 Role-based data
-    if (req.user.role !== "admin") {
-      filter.assignedTo = req.user._id;
-    }
-
-    // 🔍 Optional filters
     if (status) filter.status = status;
     if (priority) filter.priority = priority;
 
@@ -198,21 +220,16 @@ exports.exportLeadsCSV = async (req, res) => {
       .lean();
 
     if (!leads.length) {
-      return res.status(404).json({
-        message: "No leads found to export",
-      });
+      return res.status(404).json({ message: "No leads found" });
     }
 
-    // 🧾 CSV HEADER
     let csv =
       "Name,Email,Phone,Company,Status,Priority,Assigned To,Created At\n";
 
-    // 🧾 CSV ROWS
     leads.forEach((lead) => {
       csv += `"${lead.name}","${lead.email}","${lead.phone}","${lead.company || ""}","${lead.status}","${lead.priority}","${lead.assignedTo?.name || ""}","${lead.createdAt}"\n`;
     });
 
-    // ⬇️ Auto-download
     res.setHeader("Content-Type", "text/csv");
     res.setHeader(
       "Content-Disposition",
@@ -221,7 +238,6 @@ exports.exportLeadsCSV = async (req, res) => {
 
     res.status(200).send(csv);
   } catch (error) {
-    console.error("CSV EXPORT ERROR:", error);
     res.status(500).json({ message: "CSV export failed" });
   }
 };

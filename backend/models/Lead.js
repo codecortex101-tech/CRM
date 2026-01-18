@@ -49,7 +49,10 @@ const leadSchema = new mongoose.Schema(
 
     notes: [
       {
-        content: String,
+        content: {
+          type: String,
+          required: true,
+        },
         createdBy: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "User",
