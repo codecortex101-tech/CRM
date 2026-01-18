@@ -1,0 +1,46 @@
+/* ===== SIDEBAR ===== */
+.sidebar {
+  width: 240px;
+  background: #020617;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.logo-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  margin-bottom: 32px;
+}
+
+.logo-icon {
+  width: 28px;
+  height: 28px;
+}
+
+.sidebar a {
+  color: var(--text-muted);
+  text-decoration: none;
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  transition: background var(--transition);
+}
+
+.sidebar a:hover {
+  background: rgba(255,255,255,0.05);
+}
+
+.sidebar a.active {
+  background: rgba(59,130,246,0.2);
+  color: #fff;
+}
+
+.role-badge {
+  background: rgba(255,255,255,0.1);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+}

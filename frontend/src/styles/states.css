@@ -1,0 +1,20 @@
+/* ===== SKELETON ===== */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #1e293b,
+    #334155,
+    #1e293b
+  );
+  animation: pulse 1.4s infinite;
+  border-radius: var(--radius);
+}
+
+@keyframes pulse {
+  0% { background-position: 0% }
+  100% { background-position: 200% }
+}
+
+.skeleton-card {
+  padding: 20px;
+}

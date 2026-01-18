@@ -1,0 +1,47 @@
+/* ===== DASHBOARD LAYOUT ===== */
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Main area */
+.main {
+  flex: 1;
+  padding: 28px 32px;
+  overflow-y: auto;
+}
+
+/* Grid system */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+
+/* Dashboard cards */
+.dashboard-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+}
+
+.dashboard-card h3 {
+  margin-top: 0;
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+
+/* Compact card */
+.compact-card {
+  padding: 16px;
+}
+
+/* Empty state */
+.empty-state {
+  color: var(--text-muted);
+  font-size: 14px;
+  text-align: center;
+  padding: 30px 0;
+}

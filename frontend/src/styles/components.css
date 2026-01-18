@@ -1,0 +1,36 @@
+/* ===== STATS ===== */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+}
+
+.stat {
+  background: var(--bg-card);
+  padding: 18px;
+  border-radius: var(--radius);
+  text-align: center;
+}
+
+.stat p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.stat h2 {
+  margin: 6px 0 0;
+  font-size: 22px;
+}
+
+/* ===== BADGES ===== */
+.status-badge {
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 999px;
+}
+
+.status-new { background: #3b82f6; }
+.status-contacted { background: #f59e0b; }
+.status-qualified { background: #10b981; }
+.status-closed { background: #6b7280; }

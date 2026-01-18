@@ -1,0 +1,23 @@
+:root {
+  /* Brand colors */
+  --primary: #3b82f6;
+  --primary-dark: #2563eb;
+  --success: #10b981;
+  --danger: #ef4444;
+
+  /* Backgrounds */
+  --bg-main: #0f172a;
+  --bg-card: #1e293b;
+
+  /* Text */
+  --text-main: #e5e7eb;
+  --text-muted: #94a3b8;
+  --text-error: #f87171;
+
+  /* Borders & UI */
+  --border: #334155;
+  --radius: 12px;
+
+  /* Effects */
+  --transition: 0.2s ease;
+}
